@@ -27,12 +27,21 @@ class List:
 
 
 @strawberry.type
-class Item:
+class BaseItem:
     id: strawberry.ID
     name: str
     description: str = None
     completed: bool = False
-    children: list["Item"] = None
+
+
+@strawberry.type
+class SubItem(BaseItem):
+    pass
+
+
+@strawberry.type
+class Item(BaseItem):
+    children: list["SubItem"] = None
 
 
 @strawberry.enum
