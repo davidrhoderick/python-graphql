@@ -1,7 +1,7 @@
 import strawberry
 from sqlalchemy.orm import Session, joinedload
 from models import ListModel
-from gqltypes import List, Item, ListInput, ActionStatus
+from gqltypes import List, Item, ListInput, ActionStatus, ListWithItems
 
 
 def get_lists(info: strawberry.Info) -> list[List]:
@@ -10,7 +10,7 @@ def get_lists(info: strawberry.Info) -> list[List]:
     return [List(id=db_list.id, name=db_list.name) for db_list in db_lists]
 
 
-def get_list(id: strawberry.ID, info: strawberry.Info) -> List:
+def get_list(id: strawberry.ID, info: strawberry.Info) -> ListWithItems:
     db: Session = info.context["db"]
     db_list = (
         db.query(ListModel)
@@ -28,7 +28,7 @@ def get_list(id: strawberry.ID, info: strawberry.Info) -> List:
             )
             for item in db_list.items
         ]
-        return List(id=db_list.id, name=db_list.name, items=items)
+        return ListWithItems(id=db_list.id, name=db_list.name, items=items)
     else:
         raise ValueError("List not found")
 
@@ -47,7 +47,7 @@ def put_list(input: ListInput, info: strawberry.Info) -> List:
             db.commit()
         else:
             raise ValueError("List not found")
-    return List(id=db_list.id, name=db_list.name)
+    return List(id=db_list.id, name=db_list.name, items=items)
 
 
 def delete_list(id: strawberry.ID, info: strawberry.Info) -> ActionStatus:

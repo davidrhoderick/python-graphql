@@ -7,7 +7,8 @@ from lists import (
 )
 from items import (
     put_item,
-    toggle_item_check,
+    toggle_item_completion,
+    put_sub_item,
     delete_item,
 )
 from gqltypes import List, Item, ListInput, ItemInput, ActionStatus
@@ -24,7 +25,8 @@ class Mutation:
     put_list = strawberry.mutation(resolver=put_list)
     delete_list = strawberry.mutation(resolver=delete_list)
     put_item = strawberry.mutation(resolver=put_item)
-    toggle_item_check = strawberry.mutation(resolver=toggle_item_check)
+    put_sub_item = strawberry.mutation(resolver=put_sub_item)
+    toggle_item_completion = strawberry.mutation(resolver=toggle_item_completion)
     delete_item = strawberry.mutation(resolver=delete_item)
 
 

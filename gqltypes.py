@@ -18,10 +18,27 @@ class ItemInput:
     description: Optional[str] = None
 
 
+@strawberry.input
+class SubItemInput:
+    itemId: strawberry.ID
+    id: Optional[strawberry.ID] = None
+    name: str
+    description: Optional[str] = None
+
+
 @strawberry.type
-class List:
+class BaseList:
     id: strawberry.ID
     name: str
+
+
+@strawberry.type
+class List(BaseList):
+    pass
+
+
+@strawberry.type
+class ListWithItems(BaseList):
     items: list[Optional["Item"]]
 
 
@@ -35,7 +52,7 @@ class BaseItem:
 
 @strawberry.type
 class SubItem(BaseItem):
-    pass
+    parent: strawberry.ID
 
 
 @strawberry.type
