@@ -1,9 +1,11 @@
 import strawberry
-from resolvers import (
+from lists import (
     get_lists,
     get_list,
     put_list,
     delete_list,
+)
+from items import (
     put_item,
     toggle_item_check,
     delete_item,
