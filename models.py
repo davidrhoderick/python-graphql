@@ -1,6 +1,10 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, DeclarativeBase
 from database import Base
+
+
+class Base(DeclarativeBase):
+    pass
 
 
 class ListModel(Base):
