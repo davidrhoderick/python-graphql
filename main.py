@@ -5,6 +5,18 @@ from enum import Enum
 from fastapi import FastAPI
 from strawberry.fastapi import GraphQLRouter
 
+from database import SessionLocal
+
+from models import ListModel, SubItemModel, ItemModel
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 @strawberry.input
 class ListInput:
