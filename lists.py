@@ -14,9 +14,23 @@ def get_list(id: strawberry.ID) -> list[Item]:
     return []
 
 
-def put_list(input: ListInput) -> List:
-    # Implement the logic to add or update a list in the database
-    return List(id="123456", name=input.name)
+def put_list(input: ListInput, info: strawberry.Info) -> List:
+
+    print("context", info.context["db"])
+    db = info.context["db"]
+    if not input.id:
+        db_list = ListModel(name=input.name)
+        db.add(db_list)
+        db.commit()
+        db.refresh(db_list)
+    else:
+        db_list = db.query(ListModel).filter(ListModel.id == input.id).first()
+        if db_list:
+            db_list.name = input.name
+            db.commit()
+        else:
+            raise ValueError("List not found")
+    return List(id=db_list.id, name=db_list.name)
 
 
 def delete_list(id: strawberry.ID) -> ActionStatus:
