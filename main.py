@@ -1,5 +1,7 @@
 import strawberry
 
+from enum import Enum
+
 from fastapi import FastAPI
 from strawberry.fastapi import GraphQLRouter
 
@@ -33,6 +35,12 @@ class Item:
     children: list["Item"] = None
 
 
+@strawberry.enum
+class ActionStatus(Enum):
+    SUCCESS = "SUCCESS"
+    FAIL = "FAIL"
+
+
 @strawberry.type
 class Query:
     @strawberry.field
@@ -55,6 +63,10 @@ class Mutation:
         return List(id=id, name=input.name)
 
     @strawberry.mutation
+    def delete_list(self, id: strawberry.ID) -> ActionStatus:
+        return ActionStatus.SUCCESS
+
+    @strawberry.mutation
     def put_item(self, input: ItemInput) -> Item:
         if not input.id:
             id = "123456"
@@ -66,6 +78,14 @@ class Mutation:
             description=input.description,
             completed=False,
         )
+
+    @strawberry.mutation
+    def toggle_item_check(self, id: strawberry.ID) -> ActionStatus:
+        return ActionStatus.SUCCESS
+
+    @strawberry.mutation
+    def delete_item(self, id: strawberry.ID) -> ActionStatus:
+        return ActionStatus.SUCCESS
 
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
