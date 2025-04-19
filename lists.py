@@ -1,23 +1,40 @@
 import strawberry
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from models import ListModel
 from gqltypes import List, Item, ListInput, ActionStatus
 
 
-def get_lists() -> list[List]:
-    # Implement the logic to fetch lists from the database
-    return []
+def get_lists(info: strawberry.Info) -> list[List]:
+    db: Session = info.context["db"]
+    db_lists = db.query(ListModel).all()
+    return [List(id=db_list.id, name=db_list.name) for db_list in db_lists]
 
 
-def get_list(id: strawberry.ID) -> list[Item]:
-    # Implement the logic to fetch a specific list from the database
-    return []
+def get_list(id: strawberry.ID, info: strawberry.Info) -> List:
+    db: Session = info.context["db"]
+    db_list = (
+        db.query(ListModel)
+        .options(joinedload(ListModel.items))
+        .filter(ListModel.id == id)
+        .first()
+    )
+    if db_list:
+        items = [
+            Item(
+                id=item.id,
+                name=item.name,
+                description=item.description,
+                completed=item.completed,
+            )
+            for item in db_list.items
+        ]
+        return List(id=db_list.id, name=db_list.name, items=items)
+    else:
+        raise ValueError("List not found")
 
 
 def put_list(input: ListInput, info: strawberry.Info) -> List:
-
-    print("context", info.context["db"])
-    db = info.context["db"]
+    db: Session = info.context["db"]
     if not input.id:
         db_list = ListModel(name=input.name)
         db.add(db_list)
@@ -33,6 +50,12 @@ def put_list(input: ListInput, info: strawberry.Info) -> List:
     return List(id=db_list.id, name=db_list.name)
 
 
-def delete_list(id: strawberry.ID) -> ActionStatus:
-    # Implement the logic to delete a list from the database
-    return ActionStatus.SUCCESS
+def delete_list(id: strawberry.ID, info: strawberry.Info) -> ActionStatus:
+    db: Session = info.context["db"]
+    db_list = db.query(ListModel).filter(ListModel.id == id).first()
+    if db_list:
+        db.delete(db_list)
+        db.commit()
+        return ActionStatus.SUCCESS
+    else:
+        raise ValueError("List not found")

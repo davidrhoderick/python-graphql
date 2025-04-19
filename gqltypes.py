@@ -22,6 +22,7 @@ class ItemInput:
 class List:
     id: strawberry.ID
     name: str
+    items: list[Optional["Item"]]
 
 
 @strawberry.type
