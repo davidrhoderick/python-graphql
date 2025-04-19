@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from strawberry.fastapi import GraphQLRouter
 
 from database import SessionLocal
+from typing import Optional
 
 from models import ListModel, SubItemModel, ItemModel
 
@@ -20,16 +21,16 @@ def get_db():
 
 @strawberry.input
 class ListInput:
-    id: strawberry.ID = None
+    id: Optional[strawberry.ID] = None
     name: str
 
 
 @strawberry.input
 class ItemInput:
     listId: strawberry.ID
-    id: strawberry.ID = None
+    id: Optional[strawberry.ID] = None
     name: str
-    description: str = None
+    description: Optional[str] = None
 
 
 @strawberry.type
@@ -42,8 +43,8 @@ class List:
 class BaseItem:
     id: strawberry.ID
     name: str
-    description: str = None
-    completed: bool = False
+    description: Optional[str] = None
+    completed: Optional[bool] = False
 
 
 @strawberry.type
@@ -53,7 +54,7 @@ class SubItem(BaseItem):
 
 @strawberry.type
 class Item(BaseItem):
-    children: list["SubItem"] = None
+    children: Optional[list["SubItem"]] = None
 
 
 @strawberry.enum
