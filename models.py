@@ -13,7 +13,9 @@ class ListModel(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
 
-    items = relationship("ItemModel", back_populates="list")
+    items = relationship(
+        "ItemModel", back_populates="list", cascade="all, delete-orphan"
+    )
 
 
 class ItemModel(Base):
@@ -26,7 +28,9 @@ class ItemModel(Base):
     list_id = Column(Integer, ForeignKey("lists.id"))
 
     list = relationship("ListModel", back_populates="items")
-    children = relationship("SubItemModel", back_populates="parent_item")
+    children = relationship(
+        "SubItemModel", back_populates="parent_item", cascade="all, delete-orphan"
+    )
 
 
 class SubItemModel(Base):
