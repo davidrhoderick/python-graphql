@@ -1,7 +1,7 @@
 import strawberry
 from sqlalchemy.orm import Session, joinedload
 from models import ListModel
-from gqltypes import List, Item, ListInput, ActionStatus, ListWithItems
+from gqltypes import List, Item, ListInput, ActionStatus, ListWithItems, SubItem
 
 
 def get_lists(info: strawberry.Info) -> list[List]:
@@ -25,6 +25,16 @@ def get_list(id: strawberry.ID, info: strawberry.Info) -> ListWithItems:
                 name=item.name,
                 description=item.description,
                 completed=item.completed,
+                children=[
+                    SubItem(
+                        id=child.id,
+                        name=child.name,
+                        description=child.description,
+                        completed=child.completed,
+                        parent=child.parent_item_id,
+                    )
+                    for child in item.children
+                ],
             )
             for item in db_list.items
         ]
