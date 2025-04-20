@@ -80,6 +80,37 @@ def toggle_item_completion(id: strawberry.ID, info: strawberry.Info) -> Item:
     return item
 
 
+def toggle_sub_item_completion(id: strawberry.ID, info: strawberry.Info) -> Item:
+    db: Session = info.context["db"]
+    sub_item = db.query(SubItemModel).filter(SubItemModel.id == id).first()
+
+    if not sub_item:
+        raise ValueError("Item not found")
+
+    sub_item.completed = not sub_item.completed
+
+    db.commit()
+
+    return sub_item
+
+
 def delete_item(id: strawberry.ID, info: strawberry.Info) -> ActionStatus:
-    # Implement the logic to delete an item from the database
-    return ActionStatus.SUCCESS
+    db: Session = info.context["db"]
+    db_list = db.query(ItemModel).filter(ItemModel.id == id).first()
+    if db_list:
+        db.delete(db_list)
+        db.commit()
+        return ActionStatus.SUCCESS
+    else:
+        raise ValueError("Item not found")
+
+
+def delete_sub_item(id: strawberry.ID, info: strawberry.Info) -> ActionStatus:
+    db: Session = info.context["db"]
+    db_list = db.query(SubItemModel).filter(SubItemModel.id == id).first()
+    if db_list:
+        db.delete(db_list)
+        db.commit()
+        return ActionStatus.SUCCESS
+    else:
+        raise ValueError("Subitem not found")
