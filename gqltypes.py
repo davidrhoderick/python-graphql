@@ -39,7 +39,7 @@ class List(BaseList):
 
 @strawberry.type
 class ListWithItems(BaseList):
-    items: list[Optional["Item"]]
+    items: list["Item"]
 
 
 @strawberry.type
